@@ -173,12 +173,20 @@ class _CustomButton extends StatelessWidget {
 }
 */
 
+
+/*********************************/
+
+// Google Maps and GeoLocator code
+
+/**********************************/
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'dart:collection';
+import 'package:flutter/cupertino.dart';
 
 void main() => runApp(MyApp());
 
@@ -240,6 +248,37 @@ class MapSampleState extends State<MapSample> {
     return await Geolocator.getCurrentPosition();
   }
 
+  // Adds Marker to google Map
+  Set<Marker> _markers = HashSet<Marker>();
+  GoogleMapController _googleMapController;
+  BitmapDescriptor _markerIcon;
+
+  int _markerIdCounter = 1;
+
+  bool _isMarker = true;
+
+  // This function is to change the marker icon
+  void _setMarkerIcon() async {
+    _markerIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), 'assets/farm.png');
+  }
+
+  // Set Markers to the map
+  void _setMarkers(LatLng point) {
+    final String markerIdVal = 'marker_id_$_markerIdCounter';
+    _markerIdCounter++;
+    setState(() {
+      print(
+          'Marker | Latitude: ${point.latitude}  Longitude: ${point.longitude}');
+      _markers.add(
+        Marker(
+          markerId: MarkerId(markerIdVal),
+          position: point,
+        ),
+      );
+    });
+  }
+
   Completer<GoogleMapController> _controller = Completer();
 
   @override
@@ -253,9 +292,20 @@ class MapSampleState extends State<MapSample> {
 
           return GoogleMap(
             mapType: MapType.hybrid,
+            markers: _markers,
+            myLocationButtonEnabled: true,
+            onTap: (point) {
+              if (_isMarker) {
+                setState(() {
+                  _markers.clear();
+                  //_setMarkers(LatLng(33.97237, -117.327469));
+                  _setMarkers(LatLng(latitude, longitude));
+                });
+              }
+            },
             initialCameraPosition: CameraPosition (
-                //target: LatLng(latitude, longitude),
-                target: LatLng(33.97237, -117.327469), // hard code values
+                target: LatLng(latitude, longitude),
+                //target: LatLng(33.97237, -117.327469), // hard code values
                 zoom: 14.4746,
             ),
             onMapCreated: (GoogleMapController controller) {
