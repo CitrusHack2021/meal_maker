@@ -122,11 +122,9 @@ class MapSampleState extends State<MapSample> {
   PlacesDetailsResponse response = await places.getDetailsByReference("REF");
    */
 
-
-  void _GetNearbyLocations(double lat, double lng) async {
-    //final places = new GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
-    //PlacesSearchResponse response = await places.searchNearbyWithRadius(new Location(lat, lng), 500);
-    //PlacesSearchResponse response = await places.searchNearbyWithRadius(new Location(31.0424, 42.421), 500);
+  Future<PlacesSearchResponse> _GetNearbyLocations(double lat, double lng) async {
+    final places = new GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
+    return places.searchNearbyWithRadius(new Location(lat, lng), 500);
   }
 
   Completer<GoogleMapController> _controller = Completer();
