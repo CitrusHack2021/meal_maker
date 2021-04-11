@@ -17,7 +17,7 @@ import 'package:google_maps_webservice/timezone.dart';
 
 //Fake API Key, replace with real one
 final places =
-    GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
+    GoogleMapsPlaces(apiKey: "APIKEY");
 
 class MapView extends StatelessWidget {
   final String keyword;
@@ -29,13 +29,11 @@ class MapView extends StatelessWidget {
       title: 'Flutter Food Decision',
       //home: MapSample(),
       home: Scaffold(
-          // We'll change the AppBar title later
           appBar: AppBar(
-            // automaticallyImplyLeading: true,
-            title: Text("Retaurants Near Me"),
+            title: Text("Pick A Location"),
             leading: BackButton(
               onPressed: () {
-                Navigator.pop(c ontext);
+                Navigator.pop(context);
               },
             ),
           ),
@@ -50,7 +48,6 @@ class MapSample extends StatefulWidget {
   MapSample(this.keyword);
 
   @override
-  //State<MapSample> createState() => MapSampleState();
   State<StatefulWidget> createState() {
     return MapSampleState();
   }
@@ -122,9 +119,7 @@ class MapSampleState extends State<MapSample> {
                   barrierDismissible: false,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text(
-                        result.name
-                      ),
+                      title: Text(result.name),
                       content: SingleChildScrollView(
                         child: ListBody(
                           children: [
@@ -137,7 +132,8 @@ class MapSampleState extends State<MapSample> {
                         TextButton(
                           child: Text("Copy Address"),
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: result.vicinity));
+                            Clipboard.setData(
+                                ClipboardData(text: result.vicinity));
                             Navigator.pop(context);
                           },
                         ),
@@ -186,6 +182,7 @@ class MapSampleState extends State<MapSample> {
               }
 
               return GoogleMap(
+                  mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
                     target: LatLng(latitude, longitude),
                     zoom: 15,

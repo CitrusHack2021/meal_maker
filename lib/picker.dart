@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackthons/map.dart';
 import 'package:swipable_stack/swipable_stack.dart';
-import 'dart:math';
+import 'dart:math' as math;
 
 void main() {
   runApp(MyApp());
@@ -132,7 +132,7 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
     });
     scores.add(tempScore);
 
-    int highScore = scores.reduce(max);
+    int highScore = scores.reduce(math.max);
     int index = scores.indexOf(highScore);
 
     if (index == 0) {
@@ -270,7 +270,7 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                           barrierDismissible: false,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text("You've just picked $matchedFood."),
+                              title: Text("Looks like you want $matchedFood."),
                               content: SingleChildScrollView(
                                 child: ListBody(
                                   children: [
@@ -378,37 +378,6 @@ class _CardExample extends StatelessWidget {
           color: Colors.white.withOpacity(0.8),
           fontWeight: FontWeight.bold,
         ),
-      ),
-    );
-  }
-}
-
-class _CustomCard extends StatelessWidget {
-  final String image;
-  final String label;
-
-  const _CustomCard({Key key, @required this.image, @required this.label})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
-              image,
-              fit: BoxFit.fill,
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.width,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(color: Colors.white),
-          )
-        ],
       ),
     );
   }
