@@ -122,9 +122,9 @@ class MapSampleState extends State<MapSample> {
   PlacesDetailsResponse response = await places.getDetailsByReference("REF");
    */
 
-  Future<PlacesSearchResponse> _GetNearbyLocations(double lat, double lng) async {
+  Future<PlacesSearchResponse> _GetNearbyLocations(double latNum, double lngNum) async {
     final places = new GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
-    return places.searchNearbyWithRadius(new Location(lat, lng), 500);
+    return places.searchNearbyWithRadius(new Location(lat: latNum, lng: lngNum), 500);
   }
 
   Completer<GoogleMapController> _controller = Completer();
@@ -140,6 +140,7 @@ class MapSampleState extends State<MapSample> {
           return FutureBuilder (
             future: _GetNearbyLocations(latitude, longitude),
             builder: (context, AsyncSnapshot<PlacesSearchResponse> nearbyLoc) {
+              print(nearbyLoc.data.keyword);
               return GoogleMap(
                 mapType: MapType.hybrid,
                 markers: _markers,
