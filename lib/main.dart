@@ -124,7 +124,7 @@ class MapSampleState extends State<MapSample> {
 
   Future<PlacesSearchResponse> _GetNearbyLocations(double latNum, double lngNum) async {
     final places = new GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
-    return places.searchNearbyWithRadius(new Location(lat: latNum, lng: lngNum), 500);
+    return places.searchNearbyWithRadius(new Location(lat: latNum, lng: lngNum), 5000, type: "restaurant");
   }
 
   Completer<GoogleMapController> _controller = Completer();
@@ -135,35 +135,45 @@ class MapSampleState extends State<MapSample> {
       body: FutureBuilder(
         future: _determinePosition(),
         builder: (context, AsyncSnapshot<Position> currLoc) {
-          double latitude = currLoc.data.latitude;
-          double longitude = currLoc.data.longitude;
-          return FutureBuilder (
-            future: _GetNearbyLocations(latitude, longitude),
-            builder: (context, AsyncSnapshot<PlacesSearchResponse> nearbyLoc) {
-              print(nearbyLoc.data.keyword);
-              return GoogleMap(
-                mapType: MapType.hybrid,
-                markers: _markers,
-                onTap: (point) {
-                  if (_isMarker) {
-                    setState(() {
-                      _markers.clear();
-                      //_setMarkers(LatLng(33.97237, -117.327469));
-                      _setMarkers(LatLng(latitude, longitude));
-                    });
-                  };
-                },
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(latitude, longitude),
-                  //target: LatLng(33.97237, -117.327469), // hard code values
-                  zoom: 15,
-                ),
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                },
-              );
-            }
-          );
+          if (currLoc.hasData) {
+            double latitude = currLoc.data.latitude;
+            double longitude = currLoc.data.longitude;
+            return FutureBuilder (
+                future: _GetNearbyLocations(latitude, longitude),
+                builder: (context, AsyncSnapshot<PlacesSearchResponse> nearbyLoc) {
+                  if (nearbyLoc.hasData) {
+                    print(nearbyLoc.data.results);
+                    return GoogleMap(
+                      mapType: MapType.hybrid,
+                      markers: _markers,
+                      onTap: (point) {
+                        if (_isMarker) {
+                          setState(() {
+                            _markers.clear();
+                            //_setMarkers(LatLng(33.97237, -117.327469));
+                            _setMarkers(LatLng(latitude, longitude));
+                          });
+                        };
+                      },
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(latitude, longitude),
+                        //target: LatLng(33.97237, -117.327469), // hard code values
+                        zoom: 15,
+                      ),
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+                      },
+                    );
+                  }
+                  else {
+                    return Container();
+                  }
+                }
+            );
+          }
+          else {
+            return Container();
+          }
         }
       ),
     );
