@@ -14,23 +14,19 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:google_maps_webservice/staticmap.dart';
 import 'package:google_maps_webservice/timezone.dart';
 
-void main() => runApp(MyApp());
+final places =
+    GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
 
-final places = GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
-
-class MyApp extends StatelessWidget {
+class MapView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Food Decision',
       //home: MapSample(),
       home: Scaffold(
-        // We'll change the AppBar title later
-          appBar: AppBar(
-              title: Text("Retaurants Near Me")
-          ),
-          body: MapSample()
-      ),
+          // We'll change the AppBar title later
+          appBar: AppBar(title: Text("Retaurants Near Me")),
+          body: MapSample()),
     );
   }
 }
@@ -76,8 +72,7 @@ class MapSampleState extends State<MapSample> {
         // Android's shouldShowRequestPermissionRationale
         // returned true. According to Android guidelines
         // your App should show an explanatory UI now.
-        return Future.error(
-            'Location permissions are denied');
+        return Future.error('Location permissions are denied');
       }
     }
 
@@ -91,22 +86,30 @@ class MapSampleState extends State<MapSample> {
 
   Future<void> _retrieveNearbyRestaurants(LatLng _userLocation) async {
     PlacesSearchResponse _response = await places.searchNearbyWithRadius(
-        Location(lat: _userLocation.latitude, lng: _userLocation.longitude), 100, type: "restuarant", keyword: "pizza");
+        Location(lat: _userLocation.latitude, lng: _userLocation.longitude),
+        100,
+        type: "restuarant",
+        keyword: "pizza");
 
     // print results
     _response.results.forEach((element) {
       print(element.name);
     });
 
-    Set<Marker> _restaurantMarkers = _response.results.map((result) => Marker(
-        markerId: MarkerId(result.name),
-        // Use an icon with different colors to differentiate between current location
-        // and the restaurants
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        infoWindow: InfoWindow(
-            title: result.name,
-            snippet: "Ratings: " + (result.rating?.toString() ?? "Not Rated")),
-        position: LatLng(result.geometry.location.lat, result.geometry.location.lng))).toSet();
+    Set<Marker> _restaurantMarkers = _response.results
+        .map((result) => Marker(
+            markerId: MarkerId(result.name),
+            // Use an icon with different colors to differentiate between current location
+            // and the restaurants
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
+            infoWindow: InfoWindow(
+                title: result.name,
+                snippet:
+                    "Ratings: " + (result.rating?.toString() ?? "Not Rated")),
+            position: LatLng(
+                result.geometry.location.lat, result.geometry.location.lng)))
+        .toSet();
 
     setState(() {
       _markers.addAll(_restaurantMarkers);
@@ -129,17 +132,15 @@ class MapSampleState extends State<MapSample> {
               }
 
               return GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(latitude, longitude),
-                  zoom: 15,
-                ),
-                markers: _markers
-                  ..add(Marker(
-                      markerId: MarkerId("User Location"),
-                      infoWindow: InfoWindow(title: "User Location"),
-                      position: LatLng(latitude, longitude))
-                  )
-              );
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(latitude, longitude),
+                    zoom: 15,
+                  ),
+                  markers: _markers
+                    ..add(Marker(
+                        markerId: MarkerId("User Location"),
+                        infoWindow: InfoWindow(title: "User Location"),
+                        position: LatLng(latitude, longitude))));
             } else {
               return Center(child: Text("Failed to get user location."));
             }
