@@ -17,7 +17,7 @@ import 'package:google_maps_webservice/timezone.dart';
 
 //Fake API Key, replace with real one
 final places =
-    GoogleMapsPlaces(apiKey: "AIzaSyD7dPnaOGLpLRb_XqIc2Gvv1SBoefFjPPU");
+    GoogleMapsPlaces(apiKey: "APIKEY");
 
 // Nearby Restaurants
 Set<Marker> _markers = {};
