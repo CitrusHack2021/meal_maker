@@ -1,184 +1,3 @@
-/*
-import 'package:flutter/material.dart';
-import 'package:swipable_stack/swipable_stack.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system,
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  List<String> images = [
-    "images/pic_one.jpg",
-    "images/pic_two.jpg",
-    "images/pic_three.jpg",
-    "images/pic_four.jpg",
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final _swipeController = SwipableStackController();
-    bool darkModeOn = MediaQuery.of(context).platformBrightness == Brightness.dark;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Pick Your Ingredients"),
-      ),
-      body: SafeArea(
-        child: Container(
-          child: Center(
-            child: Stack(
-              children: [
-                SwipableStack(
-                  overlayBuilder:
-                      (context, constraints, index, direction, swipeProgress) {
-                    if (direction == SwipeDirection.right) {
-                      return Opacity(
-                        opacity: 0.5,
-                        child: Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              color: Colors.green,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              height: MediaQuery.of(context).size.width * 0.9,
-                            ),
-                          ),
-                        ),
-                      );
-                    } else if (direction == SwipeDirection.left) {
-                      return Opacity(
-                        opacity: 0.5,
-                        child: Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              color: Colors.red,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              height: MediaQuery.of(context).size.width * 0.9,
-                            ),
-                          ),
-                        ),
-                      );
-                    } else {
-                      return Opacity(opacity: 0);
-                    }
-                  },
-                  controller: _swipeController,
-                  builder: (context, index, constraints) {
-                    return _SingleCard(image: images.elementAt(index));
-                  },
-                  itemCount: images.length,
-                  onWillMoveNext: (index, direction) {
-                    final allowedActions = [
-                      SwipeDirection.right,
-                      SwipeDirection.left,
-                    ];
-                    return allowedActions.contains(direction);
-                  },
-                  onSwipeCompleted: (index, direction) {
-                    print('$index, $direction');
-                  },
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    height: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _CustomButton(
-                            icon: Icon(
-                              Icons.undo,
-                              color: darkModeOn ? Colors.black : Colors.white
-                            ),
-                            color: Colors.blue,
-                            onTap: () {
-                              _swipeController.rewind();
-                            }
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SingleCard extends StatelessWidget {
-  final String image;
-
-  const _SingleCard({Key key, @required this.image}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.asset(
-          image,
-          fit: BoxFit.fill,
-          width: MediaQuery.of(context).size.width * 0.9,
-          height: MediaQuery.of(context).size.width * 0.9,
-        ),
-      ),
-    );
-  }
-}
-
-class _CustomButton extends StatelessWidget {
-  const _CustomButton(
-      {Key key,
-      @required this.icon,
-      @required this.onTap,
-      @required this.color})
-      : super(key: key);
-  final Icon icon;
-  final VoidCallback onTap;
-  final Color color;
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 80,
-        width: 80,
-        child: icon,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-      ),
-    );
-  }
-}
-*/
-
-
-/*********************************/
-
-// Google Maps and GeoLocator code
-
-/**********************************/
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -187,6 +6,16 @@ import 'package:geolocator/geolocator.dart';
 
 import 'dart:collection';
 import 'package:flutter/cupertino.dart';
+
+import 'package:flutter_google_places/flutter_google_places.dart';
+
+import 'package:google_maps_webservice/directions.dart';
+import 'package:google_maps_webservice/distance.dart';
+import 'package:google_maps_webservice/geocoding.dart';
+import 'package:google_maps_webservice/geolocation.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:google_maps_webservice/staticmap.dart';
+import 'package:google_maps_webservice/timezone.dart';
 
 void main() => runApp(MyApp());
 
@@ -279,6 +108,27 @@ class MapSampleState extends State<MapSample> {
     });
   }
 
+  /*
+
+  final places = new GoogleMapsPlaces(apiKey: "<API_KEY>");
+  final places = new GoogleMapsPlaces(apiKey: "<API_KEY>", httpClient: new BrowserClient());
+  final places = new GoogleMapsPlaces(baseUrl: "http://myProxy.com");
+
+  PlacesSearchResponse response = await places.searchNearbyWithRadius(new Location(31.0424, 42.421), 500);
+  PlacesSearchResponse response = await places.searchNearbyWithRankby(new Location(31.0424, 42.421), "distance");
+  PlacesSearchResponse response = await places.searchByText("123 Main Street");
+
+  PlacesDetailsResponse response = await places.getDetailsByPlaceId("PLACE_ID");
+  PlacesDetailsResponse response = await places.getDetailsByReference("REF");
+   */
+
+
+  void _GetNearbyLocations(double lat, double lng) async {
+    //final places = new GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
+    //PlacesSearchResponse response = await places.searchNearbyWithRadius(new Location(lat, lng), 500);
+    //PlacesSearchResponse response = await places.searchNearbyWithRadius(new Location(31.0424, 42.421), 500);
+  }
+
   Completer<GoogleMapController> _controller = Completer();
 
   @override
@@ -289,34 +139,43 @@ class MapSampleState extends State<MapSample> {
         builder: (context, AsyncSnapshot<Position> currLoc) {
           double latitude = currLoc.data.latitude;
           double longitude = currLoc.data.longitude;
-
-          return GoogleMap(
-            mapType: MapType.hybrid,
-            markers: _markers,
-            myLocationButtonEnabled: true,
-            onTap: (point) {
-              if (_isMarker) {
-                setState(() {
-                  _markers.clear();
-                  //_setMarkers(LatLng(33.97237, -117.327469));
-                  _setMarkers(LatLng(latitude, longitude));
-                });
-              }
-            },
-            initialCameraPosition: CameraPosition (
-                target: LatLng(latitude, longitude),
-                //target: LatLng(33.97237, -117.327469), // hard code values
-                zoom: 14.4746,
-            ),
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
+          return FutureBuilder (
+            future: _GetNearbyLocations(latitude, longitude),
+            builder: (context, AsyncSnapshot<PlacesSearchResponse> nearbyLoc) {
+              return GoogleMap(
+                mapType: MapType.hybrid,
+                markers: _markers,
+                onTap: (point) {
+                  if (_isMarker) {
+                    setState(() {
+                      _markers.clear();
+                      //_setMarkers(LatLng(33.97237, -117.327469));
+                      _setMarkers(LatLng(latitude, longitude));
+                    });
+                  };
+                },
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(latitude, longitude),
+                  //target: LatLng(33.97237, -117.327469), // hard code values
+                  zoom: 15,
+                ),
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+              );
+            }
           );
         }
       ),
     );
   }
 }
+
+/**************************/
+
+// Find Nearby locations
+
+/**************************/
 
 
 /***********************************************/
