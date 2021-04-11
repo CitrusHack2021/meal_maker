@@ -96,7 +96,7 @@ class MapSampleState extends State<MapSample> {
         Location(lat: _userLocation.latitude, lng: _userLocation.longitude),
         100,
         type: "restuarant",
-        keyword: "pizza");
+        keyword: matchedFood);
 
     // print results
     _response.results.forEach((element) {
