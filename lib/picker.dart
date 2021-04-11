@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackthons/map.dart';
 import 'package:swipable_stack/swipable_stack.dart';
+import 'dart:math';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +32,126 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
   List<String> _pickedIngredients;
   List<String> _ingredientList;
 
+  String matchIngredients(List<String> ingredients) {
+    List<int> scores = [];
+
+    List<String> pizza = [
+      "Cheese",
+      "Bread/Breading",
+      "Protein",
+      "Pasta Sauce",
+      "Bell Peppers",
+      "Tomatoes"
+    ];
+    int tempScore = 0;
+    ingredients.forEach((element) {
+      if (pizza.contains(element)) {
+        tempScore += 1;
+      }
+    });
+    scores.add(tempScore);
+
+    List<String> burger = [
+      "Cheese",
+      "Bread/Breading",
+      "Protein",
+      "Lettuce",
+      "Tomatoes",
+      "Guacamole"
+    ];
+    tempScore = 0;
+    ingredients.forEach((element) {
+      if (burger.contains(element)) {
+        tempScore += 1;
+      }
+    });
+    scores.add(tempScore);
+
+    List<String> burrito = [
+      "Guacamole",
+      "Beans",
+      "Rice",
+      "Cheese",
+      "Protein",
+      "Seafood",
+      "Tortilla"
+    ];
+    tempScore = 0;
+    ingredients.forEach((element) {
+      if (burrito.contains(element)) {
+        tempScore += 1;
+      }
+    });
+    scores.add(tempScore);
+
+    List<String> breakfast = [
+      "Syrup",
+      "Cheese",
+      "Egg",
+      "Spinach",
+      "Fruits",
+      "Tomatoes",
+      "Protein"
+    ];
+    tempScore = 0;
+    ingredients.forEach((element) {
+      if (breakfast.contains(element)) {
+        tempScore += 1;
+      }
+    });
+    scores.add(tempScore);
+
+    List<String> phosushi = [
+      "Noodles",
+      "Protein",
+      "Seafood",
+      "Bell Peppers",
+      "Rice"
+    ];
+    tempScore = 0;
+    ingredients.forEach((element) {
+      if (phosushi.contains(element)) {
+        tempScore += 1;
+      }
+    });
+    scores.add(tempScore);
+
+    List<String> pasta = [
+      "Pasta",
+      "Pasta Sauce",
+      "Spinach",
+      "Cheese",
+      "Bell Peppers",
+      "Tomatoes"
+    ];
+    tempScore = 0;
+    ingredients.forEach((element) {
+      if (pasta.contains(element)) {
+        tempScore += 1;
+      }
+    });
+    scores.add(tempScore);
+
+    int highScore = scores.reduce(max);
+    int index = scores.indexOf(highScore);
+
+    if (index == 0) {
+      return "Pizza";
+    } else if (index == 1) {
+      return "Burger";
+    } else if (index == 2) {
+      return "Burrito";
+    } else if (index == 3) {
+      return "Breakfast";
+    } else if (index == 4) {
+      return "Pho + Sushi";
+    } else if (index == 5) {
+      return "Pasta";
+    } else {
+      return "Unknown";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -54,9 +175,7 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
       "Tomatoes",
       "Tortillas",
       "Guacamole",
-      "Beef",
-      "Ham",
-      "Chicken",
+      "Protein",
       "Potatoes",
       "Beans",
       "Syrup",
@@ -136,21 +255,26 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                     return allowedActions.contains(direction);
                   },
                   onSwipeCompleted: (index, direction) {
-                    print('$index, $direction');
+                    // print('$index, $direction');
                     _cardsSwiped += 1;
-                    _pickedIngredients.add(_ingredientList.elementAt(index));
+
+                    if (direction == SwipeDirection.right) {
+                      _pickedIngredients.add(_ingredientList.elementAt(index));
+                    }
+
+                    String matchedFood = matchIngredients(_pickedIngredients);
+
                     if (_cardsSwiped == _ingredientList.length) {
                       showDialog<void>(
                           context: context,
                           barrierDismissible: false,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text("We're done!"),
+                              title: Text("You've just picked $matchedFood."),
                               content: SingleChildScrollView(
                                 child: ListBody(
                                   children: [
-                                    Text(
-                                        "You've just picked your ingredient list."),
+                                    Text ("Now it's time to find a place to eat!"),
                                     Text(
                                         "Would you like to continue or restart?")
                                   ],
@@ -164,7 +288,7 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (BuildContext context) =>
-                                                MapView()));
+                                                MapView(matchedFood)));
                                   },
                                 ),
                                 TextButton(

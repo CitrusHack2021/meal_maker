@@ -18,6 +18,9 @@ final places =
     GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
 
 class MapView extends StatelessWidget {
+  final String keyword;
+  MapView(this.keyword);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,6 +35,10 @@ class MapView extends StatelessWidget {
 }
 
 class MapSample extends StatefulWidget {
+  final String keyword;
+
+  MapSample(this.keyword);
+
   @override
   //State<MapSample> createState() => MapSampleState();
   State<StatefulWidget> createState() {
@@ -93,7 +100,7 @@ class MapSampleState extends State<MapSample> {
 
     // print results
     _response.results.forEach((element) {
-      print(element.name);
+      // print(element.name);
     });
 
     Set<Marker> _restaurantMarkers = _response.results
@@ -118,6 +125,8 @@ class MapSampleState extends State<MapSample> {
 
   @override
   Widget build(BuildContext context) {
+    String matchedFood = widget.keyword;
+
     return FutureBuilder(
         future: _determinePosition(),
         builder: (context, AsyncSnapshot<Position> currLoc) {
