@@ -29,7 +29,7 @@ class MapView extends StatelessWidget {
       home: Scaffold(
           // We'll change the AppBar title later
           appBar: AppBar(title: Text("Retaurants Near Me")),
-          body: MapSample()),
+          body: MapSample(keyword)),
     );
   }
 }
@@ -91,16 +91,17 @@ class MapSampleState extends State<MapSample> {
   // Nearby Restaurants
   Set<Marker> _markers = {};
 
-  Future<void> _retrieveNearbyRestaurants(LatLng _userLocation) async {
+  Future<void> _retrieveNearbyRestaurants(LatLng _userLocation, String searchTerm) async {
     PlacesSearchResponse _response = await places.searchNearbyWithRadius(
         Location(lat: _userLocation.latitude, lng: _userLocation.longitude),
         100,
         type: "restuarant",
-        keyword: "pizza");
+        keyword: searchTerm
+    );
 
     // print results
     _response.results.forEach((element) {
-      // print(element.name);
+      print(element.name);
     });
 
     Set<Marker> _restaurantMarkers = _response.results
@@ -137,7 +138,7 @@ class MapSampleState extends State<MapSample> {
               double longitude = currLoc.data.longitude;
 
               if (_markers.isEmpty) {
-                _retrieveNearbyRestaurants(LatLng(latitude, longitude));
+                _retrieveNearbyRestaurants(LatLng(latitude, longitude), matchedFood);
               }
 
               return GoogleMap(
