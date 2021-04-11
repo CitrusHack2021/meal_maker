@@ -28,28 +28,42 @@ class IngredientSelectionPage extends StatefulWidget {
 class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
   SwipableStackController _stackController;
 
-  List<String> _ingredientPictures;
-
-  List<String> _ingredientNames;
+  List<String> _pickedIngredients;
+  List<String> _ingredientList;
 
   @override
   void initState() {
     super.initState();
     _stackController = SwipableStackController();
 
-    _ingredientPictures = [
-      "images/pic_one.jpg",
-      "images/pic_two.jpg",
-      "images/pic_three.jpg",
-      "images/pic_four.jpg",
-    ];
+    _pickedIngredients = [];
+    _pickedIngredients.clear();
 
-    _ingredientNames = [
-      "Ingredient One",
-      "Ingredient Two"
-          "Ingredient Three"
-          "Ingredient Four"
+    _ingredientList = [
+      "Cheese",
+      "Bread/Breading",
+      "Rice",
+      "Noodles",
+      "Eggs",
+      "Pasta",
+      "Pasta Sauce",
+      "BBQ Sauce",
+      "Lettuce",
+      "Spinach",
+      "Seafood",
+      "Tomatoes",
+      "Tortillas",
+      "Guacamole",
+      "Beef",
+      "Ham",
+      "Chicken",
+      "Potatoes",
+      "Beans",
+      "Syrup",
+      "Fruits",
+      "Bell Peppers"
     ];
+    _ingredientList.shuffle();
   }
 
   @override
@@ -57,17 +71,18 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
     int _cardsSwiped = 0;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          "Pick Your Ingredients",
-        ),
-      ),
       body: SafeArea(
-        child: Container(
-          child: Stack(
-            children: [
-              Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              "Build your meal",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.w900),
+            ),
+            Center(
+              child: Container(
+                height: MediaQuery.of(context).size.width,
                 child: SwipableStack(
                   overlayBuilder:
                       (context, constraints, index, direction, swipeProgress) {
@@ -106,13 +121,13 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                   controller: _stackController,
                   builder: (context, index, constraints) {
                     return Center(
-                      child: _CustomCard(
-                        image: _ingredientPictures.elementAt(index),
-                        label: _ingredientPictures.elementAt(index),
+                      child: _CardExample(
+                        color: Colors.blue,
+                        text: _ingredientList.elementAt(index),
                       ),
                     );
                   },
-                  itemCount: _ingredientPictures.length,
+                  itemCount: _ingredientList.length,
                   onWillMoveNext: (index, direction) {
                     final allowedActions = [
                       SwipeDirection.right,
@@ -123,7 +138,8 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                   onSwipeCompleted: (index, direction) {
                     print('$index, $direction');
                     _cardsSwiped += 1;
-                    if (_cardsSwiped == _ingredientPictures.length) {
+                    _pickedIngredients.add(_ingredientList.elementAt(index));
+                    if (_cardsSwiped == _ingredientList.length) {
                       showDialog<void>(
                           context: context,
                           barrierDismissible: false,
@@ -159,9 +175,9 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                                       PageRouteBuilder(
                                         pageBuilder:
                                             (context, animation1, animation2) =>
-                                            IngredientSelectionPage(),
+                                                IngredientSelectionPage(),
                                         transitionDuration:
-                                        Duration(seconds: 0),
+                                            Duration(seconds: 0),
                                       ),
                                     );
                                   },
@@ -173,34 +189,70 @@ class _IngredientSelectionPageState extends State<IngredientSelectionPage> {
                   },
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  height: 100,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _CustomButton(
-                          icon: Icon(Icons.close, color: Colors.white),
-                          color: Colors.red,
-                          onTap: () {
-                            _stackController.next(
-                                swipeDirection: SwipeDirection.left);
-                          }),
-                      _CustomButton(
-                          icon: Icon(Icons.check, color: Colors.white),
-                          color: Colors.green,
-                          onTap: () {
-                            _stackController.next(
-                                swipeDirection: SwipeDirection.right);
-                          })
-                    ],
-                  ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _CustomButton(
+                        icon: Icon(Icons.close, color: Colors.white),
+                        color: Colors.red,
+                        onTap: () {
+                          _stackController.next(
+                              swipeDirection: SwipeDirection.left);
+                        }),
+                    _CustomButton(
+                        icon: Icon(Icons.check, color: Colors.white),
+                        color: Colors.green,
+                        onTap: () {
+                          _stackController.next(
+                              swipeDirection: SwipeDirection.right);
+                        })
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CardExample extends StatelessWidget {
+  const _CardExample({
+    Key key,
+    this.color = Colors.indigo,
+    this.text = "Card Example",
+  }) : super(key: key);
+  final Color color;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.width,
+      width: MediaQuery.of(context).size.width * 0.9,
+      padding: EdgeInsets.all(38.0),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(15.0),
+        border: Border.all(
+          width: 7.0,
+          color: Colors.transparent.withOpacity(0.3),
+        ),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 36.0,
+          // color: Colors.white,
+          color: Colors.white.withOpacity(0.8),
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -230,9 +282,7 @@ class _CustomCard extends StatelessWidget {
           ),
           Text(
             label,
-            style: TextStyle(
-                color: Colors.white
-            ),
+            style: TextStyle(color: Colors.white),
           )
         ],
       ),
@@ -243,9 +293,9 @@ class _CustomCard extends StatelessWidget {
 class _CustomButton extends StatelessWidget {
   const _CustomButton(
       {Key key,
-        @required this.icon,
-        @required this.onTap,
-        @required this.color})
+      @required this.icon,
+      @required this.onTap,
+      @required this.color})
       : super(key: key);
   final Icon icon;
   final VoidCallback onTap;
@@ -253,13 +303,19 @@ class _CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 80,
-        width: 80,
+    return Container(
+      height: 80,
+      width: 80,
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(16)),
+      child: TextButton(
+        onPressed: onTap,
         child: icon,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: color)))),
       ),
     );
   }

@@ -7,8 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:food_decisions/map.dart';
+import 'package:hackthons/picker.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
