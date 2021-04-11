@@ -15,6 +15,7 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:google_maps_webservice/staticmap.dart';
 import 'package:google_maps_webservice/timezone.dart';
 
+//Fake API Key, replace with real one
 final places =
     GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
 
