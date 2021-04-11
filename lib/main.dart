@@ -7,8 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 
-import 'package:flutter_google_places/flutter_google_places.dart';
-
 import 'package:google_maps_webservice/directions.dart';
 import 'package:google_maps_webservice/distance.dart';
 import 'package:google_maps_webservice/geocoding.dart';
@@ -19,19 +17,31 @@ import 'package:google_maps_webservice/timezone.dart';
 
 void main() => runApp(MyApp());
 
+final places = GoogleMapsPlaces(apiKey: "AIzaSyAt6zT1WRtRiDwpfXwzxCnqo4ZHG18suCM");
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Google Maps Demo',
-      home: MapSample(),
+      title: 'Flutter Food Decision',
+      //home: MapSample(),
+      home: Scaffold(
+        // We'll change the AppBar title later
+          appBar: AppBar(
+              title: Text("Retaurants Near Me")
+          ),
+          body: MapSample()
+      ),
     );
   }
 }
 
 class MapSample extends StatefulWidget {
   @override
-  State<MapSample> createState() => MapSampleState();
+  //State<MapSample> createState() => MapSampleState();
+State<StatefulWidget> createState() {
+    return MapSampleState();
+  }
 }
 
 class MapSampleState extends State<MapSample> {
@@ -76,7 +86,7 @@ class MapSampleState extends State<MapSample> {
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
   }
-
+  /*
   // Adds Marker to google Map
   Set<Marker> _markers = HashSet<Marker>();
   GoogleMapController _googleMapController;
@@ -106,7 +116,7 @@ class MapSampleState extends State<MapSample> {
         ),
       );
     });
-  }
+  }*/
 
   /*
 
@@ -127,56 +137,127 @@ class MapSampleState extends State<MapSample> {
     return places.searchNearbyWithRadius(new Location(lat: latNum, lng: lngNum), 5000, type: "restaurant");
   }
 
+  // Nearby Restaurants
+  Future<Position> _currLocation;
+  Set<Marker> _markers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _currLocation = Geolocator.getCurrentPosition();
+  }
+
+  Future<void> _retrieveNearbyRestaurants(LatLng _userLocation) async {
+    PlacesSearchResponse _response = await places.searchNearbyWithRadius(
+        Location(lat: _userLocation.latitude, lng: _userLocation.longitude), 10000,
+        type: "restaurant");
+
+    Set<Marker> _restaurantMarkers = _response.results
+        .map((result) => Marker(
+        markerId: MarkerId(result.name),
+        // Use an icon with different colors to differentiate between current location
+        // and the restaurants
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        infoWindow: InfoWindow(
+            title: result.name,
+            snippet: "Ratings: " + (result.rating?.toString() ?? "Not Rated")),
+        position: LatLng(
+            result.geometry.location.lat, result.geometry.location.lng)))
+        .toSet();
+
+    setState(() {
+      _markers.addAll(_restaurantMarkers);
+    });
+  }
+
   Completer<GoogleMapController> _controller = Completer();
 
+  /*
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       body: FutureBuilder(
-        future: _determinePosition(),
-        builder: (context, AsyncSnapshot<Position> currLoc) {
-          if (currLoc.hasData) {
-            double latitude = currLoc.data.latitude;
-            double longitude = currLoc.data.longitude;
-            return FutureBuilder (
-                future: _GetNearbyLocations(latitude, longitude),
-                builder: (context, AsyncSnapshot<PlacesSearchResponse> nearbyLoc) {
-                  if (nearbyLoc.hasData) {
-                    print(nearbyLoc.data.results);
-                    return GoogleMap(
-                      mapType: MapType.hybrid,
-                      markers: _markers,
-                      onTap: (point) {
-                        if (_isMarker) {
-                          setState(() {
-                            _markers.clear();
-                            //_setMarkers(LatLng(33.97237, -117.327469));
-                            _setMarkers(LatLng(latitude, longitude));
-                          });
-                        };
-                      },
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(latitude, longitude),
-                        //target: LatLng(33.97237, -117.327469), // hard code values
-                        zoom: 15,
-                      ),
-                      onMapCreated: (GoogleMapController controller) {
-                        _controller.complete(controller);
-                      },
-                    );
+          future: _determinePosition(),
+          builder: (context, AsyncSnapshot<Position> currLoc) {
+            if (currLoc.hasData) {
+              double latitude = currLoc.data.latitude;
+              double longitude = currLoc.data.longitude;
+              return FutureBuilder (
+                  future: _GetNearbyLocations(latitude, longitude),
+                  builder: (context, AsyncSnapshot<PlacesSearchResponse> nearbyLoc) {
+                    if (nearbyLoc.hasData) {
+                      print(nearbyLoc.data.results);
+                      return GoogleMap(
+                        mapType: MapType.hybrid,
+                        markers: _markers,
+                        onTap: (point) {
+                          if (_isMarker) {
+                            setState(() {
+                              _markers.clear();
+                              //_setMarkers(LatLng(33.97237, -117.327469));
+                              _setMarkers(LatLng(latitude, longitude));
+                            });
+                          };
+                        },
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(latitude, longitude),
+                          //target: LatLng(33.97237, -117.327469), // hard code values
+                          zoom: 15,
+                        ),
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                        },
+                      );
+                    }
+                    else {
+                      return Container();
+                    }
                   }
-                  else {
-                    return Container();
-                  }
-                }
-            );
+              );
+            }
+            else {
+              return Container();
+            }
           }
-          else {
-            return Container();
-          }
-        }
       ),
     );
+  }
+  */
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _currLocation,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              // The user location returned from the snapshot
+              Position snapshotData = snapshot.data;
+              LatLng _userLocation =
+              LatLng(snapshotData.latitude, snapshotData.longitude);
+
+              if (_markers.isEmpty) {
+                _retrieveNearbyRestaurants(_userLocation);
+              }
+
+              return GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: _userLocation,
+                  zoom: 12,
+                ),
+                markers: _markers
+                  ..add(Marker(
+                      markerId: MarkerId("User Location"),
+                      infoWindow: InfoWindow(title: "User Location"),
+                      position: _userLocation)),
+              );
+            } else {
+              return Center(child: Text("Failed to get user location."));
+            }
+          }
+          // While the connection is not in the done state yet
+          return Center(child: CircularProgressIndicator());
+        });
   }
 }
 
