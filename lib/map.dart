@@ -35,7 +35,7 @@ class MapView extends StatelessWidget {
             title: Text("Retaurants Near Me"),
             leading: BackButton(
               onPressed: () {
-                Navigator.pop(c ontext);
+                Navigator.pop(context);
               },
             ),
           ),
