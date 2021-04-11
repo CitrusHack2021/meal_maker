@@ -17,7 +17,10 @@ import 'package:google_maps_webservice/timezone.dart';
 
 //Fake API Key, replace with real one
 final places =
-    GoogleMapsPlaces(apiKey: "APIKEY");
+    GoogleMapsPlaces(apiKey: "AIzaSyD7dPnaOGLpLRb_XqIc2Gvv1SBoefFjPPU");
+
+// Nearby Restaurants
+Set<Marker> _markers = {};
 
 class MapView extends StatelessWidget {
   final String keyword;
@@ -33,6 +36,7 @@ class MapView extends StatelessWidget {
             title: Text("Pick A Location"),
             leading: BackButton(
               onPressed: () {
+                _markers.clear();
                 Navigator.pop(context);
               },
             ),
@@ -55,9 +59,6 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   /// Determine the current position of the device.
-  ///
-  /// When the location services are not enabled or permissions
-  /// are denied the `Future` will return an error.
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -65,9 +66,7 @@ class MapSampleState extends State<MapSample> {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
+      // Location services are not enabled
       return Future.error('Location services are disabled.');
     }
 
@@ -75,28 +74,19 @@ class MapSampleState extends State<MapSample> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.deniedForever) {
-        // Permissions are denied forever, handle appropriately.
+        // Permissions are denied forever
         return Future.error(
             'Location permissions are permanently denied, we cannot request permissions.');
       }
 
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
         return Future.error('Location permissions are denied');
       }
     }
 
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
+    //permissions are granted
     return await Geolocator.getCurrentPosition();
   }
-
-  // Nearby Restaurants
-  Set<Marker> _markers = {};
 
   Future<void> _retrieveNearbyRestaurants(
       LatLng _userLocation, String searchTerm) async {
@@ -189,8 +179,8 @@ class MapSampleState extends State<MapSample> {
                   ),
                   markers: _markers
                     ..add(Marker(
-                        markerId: MarkerId("User Location"),
-                        infoWindow: InfoWindow(title: "User Location"),
+                        markerId: MarkerId("Your Location"),
+                        infoWindow: InfoWindow(title: "Your Location"),
                         position: LatLng(latitude, longitude))));
             } else {
               return Center(child: Text("Failed to get user location."));
