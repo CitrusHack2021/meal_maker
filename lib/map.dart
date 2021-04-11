@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -28,7 +29,15 @@ class MapView extends StatelessWidget {
       //home: MapSample(),
       home: Scaffold(
           // We'll change the AppBar title later
-          appBar: AppBar(title: Text("Retaurants Near Me")),
+          appBar: AppBar(
+            // automaticallyImplyLeading: true,
+            title: Text("Retaurants Near Me"),
+            leading: BackButton(
+              onPressed: () {
+                Navigator.pop(c ontext);
+              },
+            ),
+          ),
           body: MapSample(keyword)),
     );
   }
@@ -91,24 +100,57 @@ class MapSampleState extends State<MapSample> {
   // Nearby Restaurants
   Set<Marker> _markers = {};
 
-  Future<void> _retrieveNearbyRestaurants(LatLng _userLocation, String searchTerm) async {
+  Future<void> _retrieveNearbyRestaurants(
+      LatLng _userLocation, String searchTerm) async {
     PlacesSearchResponse _response = await places.searchNearbyWithRadius(
         Location(lat: _userLocation.latitude, lng: _userLocation.longitude),
         100,
         type: "restuarant",
-        keyword: searchTerm
-    );
+        keyword: searchTerm);
 
     // print results
     _response.results.forEach((element) {
-      print(element.name);
+      print(element.vicinity);
     });
 
     Set<Marker> _restaurantMarkers = _response.results
         .map((result) => Marker(
+            onTap: () {
+              showDialog<void>(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(
+                        result.name
+                      ),
+                      content: SingleChildScrollView(
+                        child: ListBody(
+                          children: [
+                            Text("${result.vicinity}"),
+                            Text("Average rating: ${result.rating}/5")
+                          ],
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          child: Text("Copy Address"),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: result.vicinity));
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text("Close"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            },
             markerId: MarkerId(result.name),
-            // Use an icon with different colors to differentiate between current location
-            // and the restaurants
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueAzure),
             infoWindow: InfoWindow(
@@ -138,7 +180,8 @@ class MapSampleState extends State<MapSample> {
               double longitude = currLoc.data.longitude;
 
               if (_markers.isEmpty) {
-                _retrieveNearbyRestaurants(LatLng(latitude, longitude), matchedFood);
+                _retrieveNearbyRestaurants(
+                    LatLng(latitude, longitude), matchedFood);
               }
 
               return GoogleMap(
